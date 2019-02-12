@@ -12,7 +12,9 @@ import plumber from 'gulp-plumber';
 import autoprefixer from 'gulp-autoprefixer';
 import cleanCss from 'gulp-clean-css';
 import browserSync from "browser-sync";
+
 const PRODUCTION = yargs.argv.prod;
+const server = browserSync.create();
 
 const paths = {
     "css": 'public/dist/css',
@@ -20,7 +22,20 @@ const paths = {
     "images": "public/dist/images"
 }
 
-// Remove everything from the dist-folder
+export const serve = done => {
+  server.init({
+    server: {
+        baseDir: "./public"
+    }
+  });
+  done();
+};
+
+export const reload = done => {
+  server.reload();
+  done();
+};
+
 function clean() {
     return del(["public/dist/*"]);
 }
@@ -38,6 +53,7 @@ export const styles = () => {
         .pipe(gulpif(PRODUCTION, cleanCss({ compatibility: '*' })))
         .pipe(gulpif(PRODUCTION, rename({ suffix: ".min" })))
         .pipe(dest(paths.css))
+        .pipe(server.stream());
 }
 
 // Transpile ES6 to ES5. Bundle modules.
@@ -66,17 +82,20 @@ export const scripts = () => {
     .pipe(dest(paths.js))
 }
 
+// Compress images
 export const images = () => {
     return src('source/images/**/*.{jpg,jpeg,png,svg,gif}')
         .pipe(gulpif(PRODUCTION, imagemin()))
         .pipe(dest(paths.images));
 }
 
+// Monitor files for changes and reload
 export const monitor = () => {
     watch('source/scss/**/*.scss', styles);
-    watch('source/js/**/*.js', scripts);
-    watch('source/images/**/*.{jpg,jpeg,png,svg,gif}', images);
+    watch('source/js/**/*.js', series(scripts, reload));
+    watch('source/images/**/*.{jpg,jpeg,png,svg,gif}', series(images, reload));
+    watch("**/*.html", reload);
 }
 
-export const dev = series(clean, parallel(styles, images, scripts), monitor)
+export const dev = series(clean, parallel(styles, images, scripts), serve, monitor)
 export const build = series(clean, parallel(styles, images, scripts))
