@@ -11,6 +11,7 @@ import rename from 'gulp-rename';
 import plumber from 'gulp-plumber';
 import autoprefixer from 'gulp-autoprefixer';
 import cleanCss from 'gulp-clean-css';
+import size from 'gulp-size';
 import browserSync from "browser-sync";
 
 const PRODUCTION = yargs.argv.prod;
@@ -36,7 +37,7 @@ export const reload = done => {
   done();
 };
 
-function clean() {
+export const clean = () => {
     return del(["public/dist/*"]);
 }
 
@@ -52,6 +53,7 @@ export const styles = () => {
         .pipe(gulpif(!PRODUCTION, sourcemaps.write()))
         .pipe(gulpif(PRODUCTION, cleanCss({ compatibility: '*' })))
         .pipe(gulpif(PRODUCTION, rename({ suffix: ".min" })))
+        .pipe(size())
         .pipe(dest(paths.css))
         .pipe(server.stream());
 }
@@ -86,6 +88,7 @@ export const scripts = () => {
 export const images = () => {
     return src('source/images/**/*.{jpg,jpeg,png,svg,gif}')
         .pipe(gulpif(PRODUCTION, imagemin()))
+        .pipe(size())
         .pipe(dest(paths.images));
 }
 

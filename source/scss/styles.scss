@@ -1,8 +1,12 @@
 $tomato: tomato;
-$teal : teal;
-
 
 body {
-    background: teal;
+    background: $tomato;
     display: flex;
+    min-height: 100vh;
+}
+
+img {
+    margin: auto;
+    max-width: 55vw;
 }

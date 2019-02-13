@@ -28,6 +28,7 @@
     "gulp-plumber": "^1.2.1",
     "gulp-rename": "^1.4.0",
     "gulp-sass": "^4.0.2",
+    "gulp-size": "^3.0.0",
     "gulp-sourcemaps": "^2.6.4",
     "webpack-stream": "^5.2.1",
     "yargs": "^13.1.0"
