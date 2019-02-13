@@ -78,7 +78,7 @@ export const scripts = () => {
       mode: PRODUCTION ? 'production' : 'development',
       devtool: !PRODUCTION ? 'inline-source-map' : false,
       output: {
-        filename: 'app.js'
+        filename: PRODUCTION ? 'app.min.js' : 'app.js'
       },
     }))
     .pipe(dest(paths.js))
